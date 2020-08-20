@@ -1,20 +1,36 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import TodoListItem from './TodoListItem';
 import './TodoList.scss';
+import { List } from 'react-virtualized';
 
 const TodoList = ({ todos, onRemove, onToggle }) => {
-  return (
-    <div className="TodoList">
-      {todos.map((todo) => (
+  const rowRenderer = useCallback(
+    ({ index, key, style }) => {
+      const todo = todos[index];
+      return (
         <TodoListItem
           todo={todo}
-          key={todo.item}
+          key={key}
           onRemove={onRemove}
           onToggle={onToggle}
+          style={style}
         />
-      ))}
-    </div>
+      );
+    },
+    [onRemove, onToggle, todos],
+  );
+  return (
+    <List
+      className="TodoList"
+      width={512} //전체 크기
+      height={513} //전체 높이
+      rowCount={todos.length} //항목 개수
+      rowHeight={57} // 각 항목의 높이
+      rowRenderer={rowRenderer} //항목을 렌더링 할때 쓰는 함수
+      list={todos} //배열
+      style={{ outline: 'none' }}
+    />
   );
 };
 
-export default TodoList;
+export default React.memo(TodoList);
